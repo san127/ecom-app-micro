@@ -1,0 +1,51 @@
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    container_name: ecom-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - product-service
+      - order-service
+    networks:
+      - frontend-network
+    restart: unless-stopped
+
+  product-service:
+    build:
+      context: ./product-service
+    container_name: ecom-product-service
+    ports:
+      - "5001:5001"
+    env_file:
+      - .env
+    networks:
+      - frontend-network
+      - backend-network
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: ./order-service
+    container_name: ecom-order-service
+    ports:
+      - "3002:3002"
+    env_file:
+      - .env
+    networks:
+      - frontend-network
+      - backend-network
+    restart: unless-stopped
+
+networks:
+  frontend-network:
+    driver: bridge
+
+  backend-network:
+    driver: bridge
+
+volumes:
+  database-data:
+    driver: local
